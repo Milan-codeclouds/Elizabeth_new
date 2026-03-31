@@ -1,1 +1,1 @@
-Shopify Demo Project
+Shopify Demo Project updated
