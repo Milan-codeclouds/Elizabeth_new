@@ -1,0 +1,182 @@
+<div class="relative bg-white" x-data="{ mobileMenuOpen: false }">
+  <div class="mx-auto px-4 sm:px-6">
+    <div class="flex justify-between items-center py-6 md:justify-start md:space-x-10">
+      <!-- STORE NAME -->
+      <div class="flex justify-start lg:flex-1 truncate">
+        <h1 class="text-xl font-bold truncate">
+          {{ section.settings.logo_text | default: shop.name }}
+        </h1>
+      </div>
+
+      <!-- MOBILE MENU BUTTON -->
+      <div class="-mr-2 -my-2 ml-3 md:hidden">
+        <button @click="mobileMenuOpen = true" type="button" class="p-2">
+          {% render 'icon-menu' %}
+        </button>
+      </div>
+
+      <!-- DESKTOP NAV -->
+      <nav class="hidden md:flex space-x-10">
+        {% for link in section.settings.menu.links %}
+          {% if link.links != blank %}
+            <div class="relative" x-data="{ open: false }">
+              <button @click="open = !open" class="inline-flex items-center text-gray-500 hover:text-gray-900">
+                {{ link.title }}
+                {% render 'icon-dropdown' %}
+              </button>
+
+              <div
+                x-show="open"
+                @click.away="open = false"
+                x-transition
+                class="absolute z-10 mt-5 w-56 bg-white shadow rounded"
+              >
+                <div class="p-4 space-y-2">
+                  {% for childlink in link.links %}
+                    <a href="{{ childlink.url }}" class="block hover:bg-gray-100 p-2 rounded">
+                      {{ childlink.title }}
+                    </a>
+                  {% endfor %}
+                </div>
+              </div>
+            </div>
+          {% else %}
+            <a href="{{ link.url }}" class="text-gray-500 hover:text-gray-900">
+              {{ link.title }}
+            </a>
+          {% endif %}
+        {% endfor %}
+      </nav>
+
+      <!-- RIGHT SIDE -->
+      <div class="hidden md:flex items-center space-x-5">
+        {% if section.settings.show_cart %}
+          <a href="{{ routes.cart_url }}">
+            {% render 'icon-shopping-bag' %}
+          </a>
+        {% endif %}
+
+        {% if section.settings.show_account %}
+          <a href="{{ routes.account_login_url }}">Login</a>
+          <a href="{{ routes.account_register_url }}">Register</a>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  <!-- MOBILE MENU -->
+  <div
+    x-show="mobileMenuOpen"
+    x-transition
+    @click.away="mobileMenuOpen = false"
+    class="fixed inset-0 z-50 md:hidden"
+    x-cloak
+  >
+    <!-- OVERLAY -->
+    <div class="absolute inset-0 bg-black/30"></div>
+
+    <!-- DRAWER -->
+    <div class="relative bg-white w-80 h-full shadow-xl p-5 overflow-y-auto">
+      <!-- HEADER -->
+      <div class="flex items-center justify-between mb-6">
+        <h2 class="text-lg font-semibold">Menu</h2>
+
+        <button @click="mobileMenuOpen = false" class="p-2">
+          {% render 'icon-close' %}
+        </button>
+      </div>
+
+      <!-- NAV -->
+      <nav class="flex flex-col">
+        {% for link in section.settings.menu.links %}
+          {% if link.links != blank %}
+            <div x-data="{ open: false }" class="py-2">
+              <!-- PARENT -->
+              <button
+                @click="open = !open"
+                class="flex items-center justify-between w-full py-3 text-left text-gray-800 font-medium"
+              >
+                <span>{{ link.title }}</span>
+
+                <span
+                  :class="{ 'rotate-180': open }"
+                  class="transition-transform"
+                >
+                  {% render 'icon-dropdown' %}
+                </span>
+              </button>
+
+              <!-- CHILD LINKS -->
+              <div
+                x-show="open"
+                x-transition
+                class="pl-4 pb-2 space-y-1"
+              >
+                {% for childlink in link.links %}
+                  <a
+                    href="{{ childlink.url }}"
+                    class="block py-2 text-gray-500 hover:text-gray-900"
+                  >
+                    {{ childlink.title }}
+                  </a>
+                {% endfor %}
+              </div>
+            </div>
+
+          {% else %}
+            <a
+              href="{{ link.url }}"
+              class="py-3 text-gray-800 font-medium"
+            >
+              {{ link.title }}
+            </a>
+          {% endif %}
+        {% endfor %}
+
+        <!-- ACCOUNT LINKS -->
+        {% if section.settings.show_account %}
+          <div class="pt-4 mt-4 space-y-3 border-t">
+            <a href="{{ routes.account_login_url }}" class="block text-gray-700">Login</a>
+            <a href="{{ routes.account_register_url }}" class="block text-gray-700">Register</a>
+          </div>
+        {% endif %}
+      </nav>
+    </div>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Custom Header",
+  "settings": [
+    {
+      "type": "text",
+      "id": "logo_text",
+      "label": "Logo / Store Name",
+      "default": "My Store"
+    },
+    {
+      "type": "link_list",
+      "id": "menu",
+      "label": "Main Menu"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_cart",
+      "label": "Show Cart Icon",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_account",
+      "label": "Show Login/Register",
+      "default": true
+    }
+  ],
+  "presets": [
+    {
+      "name": "Custom Header"
+    }
+  ]
+}
+{% endschema %}
