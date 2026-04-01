@@ -32,21 +32,22 @@
         {% endif %}
 
       {% when 'article_featured_image' %}
-        {% if article.image %}
-          <div class="mb-8">
-            {% if article.image %}
-              <img
-                width=""
-                height=""
-                src="{{ article.image | image_url: width: 800 }}"
-                alt="{{ article.image.alt }}"
-                class="w-full h-auto rounded-2xl shadow-md object-cover"
-              >
-            {% else %}
-              {{ 'image' | placeholder_svg_tag: 'w-full h-64 rounded-2xl shadow-md bg-gray-100 object-cover' }}
-            {% endif %}
-          </div>
-        {% endif %}
+        <div class="mb-8">
+          {% if article.image %}
+            <img
+              width=""
+              height=""
+              src="{{ article.image | image_url: width: 800 }}"
+              alt="{{ article.image.alt }}"
+              class="w-full h-64 rounded-2xl shadow-md object-cover"
+            >
+          {% else %}
+            <div class="w-full h-64 rounded-2xl shadow-md bg-gray-100 flex items-center justify-center">
+              {{ 'image' | placeholder_svg_tag: 'w-32 h-32 text-gray-300' }}
+            </div>
+          {% endif %}
+        </div>
+        {{ article.image | json }}
 
       {% when 'article_content' %}
         <div class="prose prose-lg max-w-none text-gray-800 leading-relaxed">
@@ -58,6 +59,66 @@
     {% endcase %}
   {% endfor %}
 </article>
+
+{% if blog.comments_enabled? %}
+  <div id="comments" class="my-8">
+    {% if article.comments_count > 0 %}
+    {% else %}
+      There are no comments in this article
+    {% endif %}
+  </div>
+
+  <div id="comment_form" class="mb-8">
+    {% form 'new_comment', article %}
+      <div class="flex-1 mx-auto items-center justify-center max-w-4xl px-4">
+        <div class="px-1 md:flex mb-3">
+          <div class="px-3 md:w-1/2">
+            <label for="comment_author" class="text-gray-700 font-medium uppercase text-xs mb-2">Name</label>
+            <input
+              type="text"
+              name="comment[author]"
+              id="comment_author"
+              class="w-full text-gray-700 border py-3 px-4 mb-3 focus:outline-none"
+              placeholder="Jane Doe"
+              required
+            >
+          </div>
+          <div class="px-3 md:w-1/2">
+            <label for="comment_email" class="text-gray-700 font-medium uppercase text-xs mb-2">Email</label>
+            <input
+              type="email"
+              name="comment[email]"
+              id="comment_email"
+              class="w-full text-gray-700 border py-3 px-4 mb-3 focus:outline-none"
+              placeholder="jane@doe.com"
+              required
+            >
+          </div>
+        </div>
+        <div class="px-1 md:flex mb-3">
+          <div class="md:w-full px-3">
+            <label for="comment_content" class="text-gray-700 font-medium uppercase text-xs mb-2">Comment</label>
+            <textarea
+              class="w-full text-gray-700 border resize-none h-20 py-2 px-3 focus:outline-none"
+              name="comment[body]"
+              id="comment_content"
+              required
+            ></textarea>
+          </div>
+        </div>
+        <div class="px-1 md:flex mb-3">
+          <div class="md:w-full px-3">
+            <input
+              type="submit"
+              value="Post Comment"
+              class="w-full cursor-pointer px-4 py-2 border text-base font-medium text-white bg-gray-900 hover:bg-gray-500"
+            >
+          </div>
+        </div>
+      </div>
+    {% endform %}
+  </div>
+{% endif %}
 
 {% schema %}
 {
