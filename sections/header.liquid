@@ -51,8 +51,16 @@
       <!-- RIGHT SIDE -->
       <div class="hidden md:flex items-center space-x-5">
         {% if section.settings.show_cart %}
-          <a href="{{ routes.cart_url }}">
+          <a href="{{ routes.cart_url }}" class="relative">
             {% render 'icon-shopping-bag' %}
+
+            <!-- Cart Count Badge -->
+            <span
+              id="cart-count"
+              class="absolute -top-2 -right-2 bg-black text-white text-xs w-5 h-5 flex items-center justify-center rounded-full"
+            >
+              {{ cart.item_count }}
+            </span>
           </a>
         {% endif %}
 

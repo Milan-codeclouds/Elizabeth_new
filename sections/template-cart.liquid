@@ -1,15 +1,182 @@
 {% if cart.item_count > 0 %}
-{% else %}
-  <div class="max-w-6xl mx-auto h-60 my-4 flex items-center justify-center">
-    <div class="text-center">
-      <h1 class="text-3xl my-4">Your Cart is Empty</h1>
-      <div class="my-4 py-4">
-        <a
-          href="{{ routes.all_products_collection_url }}"
-          class="border border-gray-600 text-white bg-gray-600 px-8 py-3"
-          >Continue Shopping</a
-        >
+  <div class="max-w-6xl mx-auto px-4 py-10">
+    <!-- Heading -->
+    <h1 class="text-3xl font-semibold mb-8">{{ section.settings.cart_heading }}</h1>
+
+    <form action="{{ routes.cart_url }}" method="POST" novalidate>
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <!-- Cart Items -->
+        <div class="lg:col-span-2 space-y-6">
+          {% for item in cart.items %}
+            <div class="flex items-center border rounded-xl p-4 shadow-sm hover:shadow-md transition">
+              <!-- Product Image -->
+              <div class="w-24 h-24 shrink-0 overflow-hidden rounded-lg bg-gray-100 flex items-center justify-center">
+                {% if item.image %}
+                  <img
+                    width=""
+                    height=""
+                    src="{{ item.image | image_url: width: 200 }}"
+                    alt="{{ item.title }}"
+                    class="w-full h-full object-cover"
+                  >
+                {% else %}
+                  {{ 'product-1' | placeholder_svg_tag: 'w-full h-full object-cover text-gray-300' }}
+                {% endif %}
+              </div>
+
+              <!-- Product Info -->
+              <div class="ml-4 flex-1">
+                <h2 class="text-lg font-medium">{{ item.product.title }}</h2>
+                {% if section.settings.show_variant %}
+                  <p class="text-gray-500 text-sm">{{ item.variant.title }}</p>
+                {% endif %}
+
+                <div class="flex items-center mt-3 space-x-4">
+                  <!-- Quantity -->
+                  <input
+                    type="number"
+                    name="updates[]"
+                    min="1"
+                    value="{{ item.quantity }}"
+                    class="w-16 border rounded px-2 py-1"
+                  >
+
+                  <!-- Price -->
+                  <span class="font-semibold text-gray-800">
+                    {{ item.line_price | money }}
+                  </span>
+                </div>
+              </div>
+
+              <!-- Remove -->
+              <a
+                href="{{ item.url_to_remove }}"
+                class="text-red-500 text-sm ml-4 hover:underline"
+              >
+                Remove
+              </a>
+            </div>
+          {% endfor %}
+        </div>
+
+        <!-- Cart Summary -->
+        <div class="border rounded-xl p-6 shadow-sm h-fit">
+          <h2 class="text-xl font-semibold mb-4">{{ section.settings.summary_heading }}</h2>
+
+          <div class="flex justify-between mb-2">
+            <span>Subtotal</span>
+            <span>{{ cart.total_price | money }}</span>
+          </div>
+
+          <p class="text-sm text-gray-500 mb-4">Shipping and taxes calculated at checkout.</p>
+
+          {% if section.settings.show_update_button %}
+            <button
+              type="submit"
+              name="update"
+              class="w-full py-3 border rounded-lg mb-2.5 border-gray-600 text-gray-600 font-medium hover:bg-black hover:text-white"
+            >
+              {{ section.settings.update_button_label }}
+            </button>
+          {% endif %}
+
+          <button
+            type="submit"
+            name="checkout"
+            class="w-full bg-black text-white py-3 rounded-lg hover:bg-gray-800 transition"
+          >
+            {{ section.settings.checkout_button_label }}
+          </button>
+
+          <a
+            href="{{ routes.all_products_collection_url }}"
+            class="block text-center mt-4 text-sm text-gray-600 hover:underline"
+          >
+            {{ section.settings.continue_shopping_label }}
+          </a>
+        </div>
       </div>
+    </form>
+  </div>
+
+{% else %}
+  <!-- Empty Cart -->
+  <div class="max-w-3xl mx-auto h-[60vh] flex items-center justify-center px-4">
+    <div class="text-center">
+      <!-- Icon -->
+      <div class="text-6xl mb-4">🛒</div>
+
+      <h1 class="text-3xl font-semibold mb-2">{{ section.settings.empty_heading }}</h1>
+      <p class="text-gray-500 mb-6">{{ section.settings.empty_subtext }}</p>
+
+      <a
+        href="{{ routes.all_products_collection_url }}"
+        class="inline-block bg-black text-white px-8 py-3 rounded-lg hover:bg-gray-800 transition"
+      >
+        Start Shopping
+      </a>
     </div>
   </div>
 {% endif %}
+
+{% schema %}
+{
+  "name": "Template Cart",
+  "settings": [
+    {
+      "type": "text",
+      "id": "cart_heading",
+      "label": "Cart Heading",
+      "default": "Your Cart"
+    },
+    {
+      "type": "text",
+      "id": "summary_heading",
+      "label": "Summary Heading",
+      "default": "Summary"
+    },
+    {
+      "type": "text",
+      "id": "empty_heading",
+      "label": "Empty Cart Heading",
+      "default": "Your Cart is Empty"
+    },
+    {
+      "type": "text",
+      "id": "empty_subtext",
+      "label": "Empty Cart Subtext",
+      "default": "Looks like you haven’t added anything yet."
+    },
+    {
+      "type": "text",
+      "id": "continue_shopping_label",
+      "label": "Continue Shopping Label",
+      "default": "Continue Shopping"
+    },
+    {
+      "type": "text",
+      "id": "checkout_button_label",
+      "label": "Checkout Button Label",
+      "default": "Checkout"
+    },
+    {
+      "type": "text",
+      "id": "update_button_label",
+      "label": "Update Button Label",
+      "default": "Update"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_update_button",
+      "label": "Show Update Button",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_variant",
+      "label": "Show Variant Title",
+      "default": true
+    }
+  ]
+}
+{% endschema %}
