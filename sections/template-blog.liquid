@@ -12,75 +12,91 @@
   </div>
 
   <!-- Articles Grid -->
-  <div
-    class="
-      grid gap-8
-      {% if section.settings.columns == 2 %}
-        md:grid-cols-2
-      {% elsif section.settings.columns == 3 %}
-        md:grid-cols-3
-      {% else %}
-        md:grid-cols-1
-      {% endif %}
-    "
-  >
-    {% for article in blog.articles %}
-      <article class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition">
-        <!-- Image -->
-        <a href="{{ article.url }}">
-          {% if article.image %}
-            <img
-              width=""
-              height=""
-              src="{{ article.image | image_url: width: 600 }}"
-              alt="{{ article.title }}"
-              class="w-full h-52 object-cover"
-            >
-          {% else %}
-            <div class="w-full h-52 bg-gray-100 flex items-center justify-center">
-              {{ 'image' | placeholder_svg_tag: 'w-20 h-20 text-gray-300' }}
+  {% paginate blog.articles by section.settings.number_of_blog_posts %}
+    <div
+      class="
+        grid gap-8
+        {% if section.settings.columns == '2' %}
+            md:grid-cols-2
+        {% elsif section.settings.columns == '3' %}
+            md:grid-cols-3
+        {% else %}
+            md:grid-cols-1
+        {% endif %}
+      "
+    >
+      {% for article in blog.articles %}
+        <article class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition">
+          <!-- Image -->
+          <a href="{{ article.url }}">
+            {% if article.image %}
+              <img
+                width=""
+                height=""
+                src="{{ article.image | image_url: width: 600 }}"
+                alt="{{ article.image.alt }}"
+                class="w-full h-52 object-cover"
+              >
+            {% else %}
+              <div class="w-full h-52 bg-gray-100 flex items-center justify-center">
+                {{ 'image' | placeholder_svg_tag: 'w-20 h-20 text-gray-300' }}
+              </div>
+            {% endif %}
+          </a>
+
+          <!-- Content -->
+          <div class="p-5">
+            <!-- Meta -->
+            <div class="flex items-center justify-between text-xs text-gray-400 mb-2">
+              {% if section.settings.show_author %}
+                <span>{{ article.author }}</span>
+              {% endif %}
+              {% if section.settings.show_date %}
+                <span>{{ article.published_at | date: '%b %d, %Y' }}</span>
+              {% endif %}
             </div>
-          {% endif %}
-        </a>
 
-        <!-- Content -->
-        <div class="p-5">
-          <!-- Meta -->
-          <div class="flex items-center justify-between text-xs text-gray-400 mb-2">
-            {% if section.settings.show_author %}
-              <span>{{ article.author }}</span>
+            <!-- Title -->
+            <h2 class="text-lg font-semibold text-gray-900 mb-2">
+              <a href="{{ article.url }}" class="hover:text-blue-600 transition">
+                {{ article.title }}
+              </a>
+            </h2>
+
+            <!-- Excerpt -->
+            {% if section.settings.show_excerpt %}
+              <p class="text-sm text-gray-600 line-clamp-3 mb-4">
+                {{ article.excerpt | default: article.content | strip_html | truncate: 120 }}
+              </p>
             {% endif %}
-            {% if section.settings.show_date %}
-              <span>{{ article.published_at | date: '%b %d, %Y' }}</span>
-            {% endif %}
+
+            <!-- Read More -->
+            <a href="{{ article.url }}" class="text-sm font-medium text-blue-600 hover:underline"> Read more → </a>
           </div>
+        </article>
+      {% endfor %}
+    </div>
 
-          <!-- Title -->
-          <h2 class="text-lg font-semibold text-gray-900 mb-2">
-            <a href="{{ article.url }}" class="hover:text-blue-600 transition">
-              {{ article.title }}
-            </a>
-          </h2>
-
-          <!-- Excerpt -->
-          {% if section.settings.show_excerpt %}
-            <p class="text-sm text-gray-600 line-clamp-3 mb-4">
-              {{ article.excerpt | strip_html | truncate: 120 }}
-            </p>
-          {% endif %}
-
-          <!-- Read More -->
-          <a href="{{ article.url }}" class="text-sm font-medium text-blue-600 hover:underline"> Read more → </a>
-        </div>
-      </article>
-    {% endfor %}
-  </div>
+    <!-- Pagination UI -->
+    <div class="max-w-6xl mx-auto">
+      {% render 'pagination', paginate: paginate %}
+    </div>
+  {% endpaginate %}
 </section>
 
 {% schema %}
 {
   "name": "Blog Listing",
   "settings": [
+    {
+      "type": "range",
+      "id": "number_of_blog_posts",
+      "label": "Blog post per page",
+      "step": 1,
+      "min": 1,
+      "max": 6,
+      "default": 3
+    },
     {
       "type": "select",
       "id": "columns",

@@ -94,11 +94,9 @@
             {% endfor %}
           </div>
 
-          {% if paginate.pages > 1 %}
-            <div class="mt-6">
-              {{ paginate | default_pagination }}
-            </div>
-          {% endif %}
+          <div class="max-w-6xl">
+            {% render 'pagination', paginate: paginate %}
+          </div>
         {% endpaginate %}
       {% else %}
         <div class="text-center py-10 bg-gray-50 rounded-2xl border">

@@ -1,0 +1,45 @@
+{% if paginate.pages > 1 %}
+  <nav class="mt-12 flex justify-center items-center gap-2 flex-wrap">
+    <!-- Previous -->
+    {% if paginate.previous %}
+      <a
+        href="{{ paginate.previous.url }}"
+        class="px-4 py-2 rounded-lg border text-sm text-gray-700 hover:bg-gray-100 transition"
+      >
+        ← Prev
+      </a>
+    {% endif %}
+
+    <!-- Page Numbers -->
+    {% for part in paginate.parts %}
+      {% if part.is_link %}
+        <a
+          href="{{ part.url }}"
+          class="px-4 py-2 rounded-lg border text-sm text-gray-700 hover:bg-gray-100 transition"
+        >
+          {{ part.title }}
+        </a>
+      {% else %}
+        {% if part.title == paginate.current_page %}
+          <span class="px-4 py-2 rounded-lg text-sm bg-gray-900 text-white font-medium">
+            {{ part.title }}
+          </span>
+        {% else %}
+          <span class="px-4 py-2 text-sm text-gray-400">
+            {{ part.title }}
+          </span>
+        {% endif %}
+      {% endif %}
+    {% endfor %}
+
+    <!-- Next -->
+    {% if paginate.next %}
+      <a
+        href="{{ paginate.next.url }}"
+        class="px-4 py-2 rounded-lg border text-sm text-gray-700 hover:bg-gray-100 transition"
+      >
+        Next →
+      </a>
+    {% endif %}
+  </nav>
+{% endif %}
