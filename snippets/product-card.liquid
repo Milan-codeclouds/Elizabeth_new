@@ -1,0 +1,54 @@
+{% comment %}
+  Reusable Product Card
+  Usage:
+  {% render 'product-card', product: product %}
+{% endcomment %}
+
+<div class="group relative">
+  <!-- Image -->
+  <a href="{{ product.url }}" class="block overflow-hidden rounded-xl bg-gray-100">
+    {% if product.featured_image %}
+      <img
+        width=""
+        height=""
+        src="{{ product.featured_image | image_url: width: 600 }}"
+        alt="{{ product.title }}"
+        class="w-full h-full object-cover aspect-square group-hover:scale-105 transition duration-300"
+      >
+    {% else %}
+      {{ 'product-1' | placeholder_svg_tag: 'w-full h-full object-cover text-gray-300' }}
+    {% endif %}
+
+    {% if product.compare_at_price > product.price %}
+      <span class="absolute top-2 left-2 bg-black text-white text-xs px-2 py-1 rounded"> Sale </span>
+    {% endif %}
+  </a>
+
+  <!-- Info -->
+  <div class="mt-4 space-y-1">
+    {% if show_vendor %}
+      <p class="text-xs text-gray-400 uppercase tracking-wide">
+        {{ product.vendor }}
+      </p>
+    {% endif %}
+
+    <h3 class="text-sm font-medium">
+      <a href="{{ product.url }}" class="hover:underline">
+        {{ product.title }}
+      </a>
+    </h3>
+
+    <!-- Price -->
+    <div class="text-sm">
+      {% if product.compare_at_price > product.price %}
+        <span class="text-gray-400 line-through mr-2">
+          {{ product.compare_at_price | money }}
+        </span>
+      {% endif %}
+
+      <span class="text-gray-800 font-medium">
+        {{ product.price | money }}
+      </span>
+    </div>
+  </div>
+</div>

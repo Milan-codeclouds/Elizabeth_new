@@ -1,0 +1,95 @@
+<div class="max-w-7xl mx-auto px-4 py-10">
+  <!-- Header -->
+  <div class="mb-10 text-center">
+    <h1 class="text-3xl font-semibold tracking-tight">
+      {{ section.settings.collection_title }}
+    </h1>
+
+    {% if section.settings.show_description %}
+      <p class="mt-3 text-gray-500 max-w-2xl mx-auto">
+        {% if collection.description != blank %}
+          {{ collection.description }}
+        {% else %}
+          {{ section.settings.collection_description }}
+        {% endif %}
+      </p>
+    {% endif %}
+  </div>
+
+  {% paginate collection.products by section.settings.products_per_page %}
+    <!-- Product Grid -->
+    <div
+      class="
+        grid gap-8
+        grid-cols-2
+        sm:grid-cols-2
+        {% if section.settings.columns_desktop == '2' %}
+          md:grid-cols-2
+        {% elsif section.settings.columns_desktop == '3' %}
+          md:grid-cols-3
+        {% elsif section.settings.columns_desktop == '4' %}
+          md:grid-cols-4
+        {% endif %}
+      "
+    >
+      {% for product in collection.products %}
+        {% render 'product-card', product: product, show_vendor: section.settings.show_vendor %}
+      {% endfor %}
+    </div>
+
+    {% render 'pagination', paginate: paginate %}
+  {% endpaginate %}
+</div>
+
+{% schema %}
+{
+  "name": "Template Collection",
+  "settings": [
+    {
+      "type": "range",
+      "id": "products_per_page",
+      "label": "Products per page",
+      "min": 4,
+      "max": 12,
+      "step": 4,
+      "default": 8
+    },
+    {
+      "type": "select",
+      "id": "columns_desktop",
+      "label": "Columns (Desktop)",
+      "options": [
+        { "value": "2", "label": "2 Columns" },
+        { "value": "3", "label": "3 Columns" },
+        { "value": "4", "label": "4 Columns" }
+      ],
+      "default": "4"
+    },
+    {
+      "type": "text",
+      "id": "collection_title",
+      "label": "Change Title",
+      "default": "Collection"
+    },
+    {
+      "type": "text",
+      "id": "collection_description",
+      "label": "Change Description",
+      "default": "Collection Description"
+    },
+
+    {
+      "type": "checkbox",
+      "id": "show_vendor",
+      "label": "Show vendor",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_description",
+      "label": "Show collection description",
+      "default": true
+    }
+  ]
+}
+{% endschema %}
