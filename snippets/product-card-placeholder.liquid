@@ -1,0 +1,22 @@
+{% comment %}
+  Placeholder Product Card
+{% endcomment %}
+
+<div class="group relative">
+  <!-- Image -->
+  <div class="block overflow-hidden rounded-xl bg-gray-100">
+    {{ 'product-1' | placeholder_svg_tag: 'w-full h-full object-cover text-gray-300 aspect-square' }}
+  </div>
+
+  <!-- Info -->
+  <div class="mt-4 space-y-1">
+    <!-- Vendor -->
+    <p class="text-xs text-gray-400 uppercase tracking-wide">Brand Name</p>
+
+    <!-- Title -->
+    <h3 class="text-sm font-medium text-gray-700">Product Title</h3>
+
+    <!-- Price -->
+    <div class="text-sm text-gray-800 font-medium">₹0.00</div>
+  </div>
+</div>

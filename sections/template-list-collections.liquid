@@ -1,0 +1,68 @@
+<div class="max-w-7xl mx-auto px-4 py-10">
+  <!-- Title -->
+  <div class="text-center mb-10">
+    <h2 class="text-2xl md:text-3xl font-semibold tracking-tight">
+      {{ section.settings.title }}
+    </h2>
+  </div>
+
+  <!-- 🛍 Grid -->
+  <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+    {% for collection in collections %}
+      {% if collection.all_products_count > 0 %}
+        <a
+          href="{{ collection.url }}"
+          class="group relative block overflow-hidden rounded-xl"
+        >
+          <!-- Image -->
+          <div class="relative h-80 w-full overflow-hidden">
+            {% if collection.featured_image != blank %}
+              {{
+                collection.featured_image
+                | image_url: width: 800
+                | image_tag:
+                  loading: 'lazy',
+                  alt: collection.title,
+                  class: 'w-full h-full object-cover transition duration-500 group-hover:scale-110'
+              }}
+            {% elsif collection.products.first.featured_image != blank %}
+              {{
+                collection.products.first.featured_image
+                | image_url: width: 800
+                | image_tag:
+                  loading: 'lazy',
+                  alt: collection.title,
+                  class: 'w-full h-full object-cover transition duration-500 group-hover:scale-110'
+              }}
+            {% endif %}
+
+            <!-- Overlay -->
+            <div class="absolute inset-0 bg-linear-to-t from-black/60 via-black/20 to-transparent"></div>
+
+            <!-- Content -->
+            <div class="absolute bottom-4 left-4 text-white">
+              <h3 class="text-lg font-semibold">
+                {{ collection.title }}
+              </h3>
+              <p class="text-sm opacity-80">{{ collection.all_products_count }} products</p>
+            </div>
+          </div>
+        </a>
+      {% endif %}
+    {% endfor %}
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Template list collection",
+  "settings": [
+    {
+      "type": "text",
+      "id": "title",
+      "default": "Shop by Collection",
+      "label": "Section Title"
+    }
+  ]
+}
+{% endschema %}
